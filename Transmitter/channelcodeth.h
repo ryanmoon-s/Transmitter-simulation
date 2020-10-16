@@ -27,7 +27,7 @@ private:
 
     QString source_code;  //信源编码结果
     int way;  //哪种停信道编码方式
-    int index;  //档位
+    int index = 1;  //档位
 
     /*  信道编码相关  */
     void create_chart();
@@ -36,11 +36,13 @@ private:
     QValueAxis *axisX;
     QValueAxis *axisY;
     QVector<QPointF> points;
+    QByteArray rec_channel;   //信道编码识别出的电平序列，高为h，平为n，低为l
 
     /* 通用  */
     bool last;  //上一个电平的高低
     int count = 0;  //计数，当前是第几个脉冲
     qreal UpX = 0;    //x自增坐标
+    qreal last_Y = 0;   //上一个Y坐标的位置，信道解码识别电平用
 
     /*  AMI  */
     bool AMI_ch_flag = true;   //AMI交替flag
@@ -77,6 +79,7 @@ private:
 signals:
     void update_line_code(int code);  //更新码元显示
     void ch_code_finished();   //编码结束
+    void push_rec_ch(char c);    //将转换出的电平传给主界面打印
 
 private slots:
     void adjest_speed(int index);   //调速

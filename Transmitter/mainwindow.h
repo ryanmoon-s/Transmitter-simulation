@@ -39,6 +39,7 @@ private slots:
     /*    自定义槽    */
     void update_line_code(int code);
     void ch_code_finished();
+    void push_rec_ch(char c);
 
     /*    系统槽    */
     void on_btnOpenFile_clicked();
@@ -65,6 +66,12 @@ private slots:
 
     void on_actioninformation_triggered();
 
+    void on_btnChDecode_clicked();
+
+    void on_btnSouDecode_clicked();
+
+    void on_btnJump3_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -73,14 +80,21 @@ private:
     int count_arr[CODENUM]; //统计数组
     s_dat s_code[CODENUM];  //香农编码数组，预留空间够大，能应对所有ASCII码内存在的元素
     QString source_code;  //信源最终编码
+    QString channel_code;   //信道最终编码
+    QString channel_decode;    //信道解码结果
+    QString source_decode;    //信源解码结果，即原文本
     ChannelCodeTh *th;  //信道编码负责线程
 
-    /*    信道编码 charts 相关    */
+    /*    信道编码相关    */
     void create_chart();
     QLineSeries *series;
     QChart *chart;
     QValueAxis *axisX;
     QValueAxis *axisY;
+
+    /*    信道解码相关    */
+
+
 
 signals:
     void adjest_speed(int index);

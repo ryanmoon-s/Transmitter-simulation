@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.0, 2020-10-15T23:04:00. -->
+<!-- Written by QtCreator 4.11.0, 2020-10-17T00:32:14. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -287,8 +287,9 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:G:/All_Projects/QtProjects/Transmitter/Transmitter.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">G:/All_Projects/QtProjects/Transmitter/Transmitter.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Transmitter2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:G:/Git/myGit/Transmitter/Transmitter.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">G:/Git/myGit/Transmitter/Transmitter.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>

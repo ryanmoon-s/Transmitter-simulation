@@ -19,7 +19,9 @@ void ChannelCodeTh::set_attribute(QLineSeries *series, QChart *chart, QValueAxis
     this->way = way;
 
     /*  添加初始坐标原点  */
-    add_point(0, 0);
+    points = series->pointsVector();
+    points.append(QPointF(0, 0));
+    series->replace(points);
 }
 
 void ChannelCodeTh::CMI_zero_jump()
@@ -114,8 +116,8 @@ void ChannelCodeTh::run()
             emit update_line_code(0);
             code_machine(false);
         }
-        /*  时速控制，五档延时30ms，1档延时150ms  */
-        msleep(30*(6-index));
+        /*  时速控制，十档延时  */
+        msleep(20*(11-index));
     }
 
     /*  编码结束  */
@@ -237,9 +239,10 @@ void ChannelCodeTh::code_machine(bool now)
             //低电平
             normal_jump(range);
         }
+        break;
 
     case 3:
-        //即时编码 AMI
+        //即时编码 AMI(双极性归零码)
         if(now){
             //高电平
             if(AMI_ch_flag){  //上翻
@@ -398,22 +401,41 @@ void ChannelCodeTh::code_machine(bool now)
         /*  清空图表  */
         /* 牺牲一格，避免换到初始坐标后没有前导，出现空格的情况
          * 到了0坐标后，下一个从1开始，那么0-1之间没有连线
-         * 只受视觉影响，不影响效果
+         * 只受视觉影响，不影响上面实际点的添加
          */
         UpX = -1;
         QVector<QPointF> point;
         series->replace(point);
-
-        /*  添加初始坐标原点  */
-        add_point(0, 0);
     }
 }
 
-void ChannelCodeTh::add_point(qreal UpX, qreal Y)   //添加点
+void ChannelCodeTh::add_point(qreal UpX, qreal Y)
 {
+    /*
+     * 包含添加点、通过坐标识别电平高低
+     */
+
+    /*
+     * 识别电平
+     * 判断上一个Y坐标与这一个Y坐标关系，以裁决是产生了一个高电平还是产生了一个低电平
+     * (每种方式不一样)
+     */
+    if(last_Y == Y){
+        if(Y == 0)
+            emit push_rec_ch('n');
+        else if(Y == 1)
+            emit push_rec_ch('h');
+        else if(Y == -1)
+            emit push_rec_ch('l');
+    }
+
+    /*  添加点  */
     points = series->pointsVector();
     points.append(QPointF(UpX, Y));
     series->replace(points);
+
+    /*  记录上一次的y坐标，供识别电平用  */
+    last_Y = Y;
 }
 
 void ChannelCodeTh::adjest_speed(int index)  //调速
