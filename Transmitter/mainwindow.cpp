@@ -375,13 +375,13 @@ void MainWindow::on_btnChDecode_clicked()
     const char *str = bstr;
 
     /*  解码  */
-    char last_level = 'h';   //上一个电平状态，归零码判断低电平专用(连续两个低电平解释为1)
+    char last_level = 'i';   //上一个电平状态，归零码判断低电平专用(连续两个低电平解释为1)
 
     char last_h_hdb3 = 'n';    //上一个脉冲是向上还是向下，HDB3判断V电平专用(连续两个相同属性的脉冲，第二个将被解释为0)
-    int last_indedxOf_v_hdb3 = -1;    //上一个V脉冲的下标，HDB3将判断两个V之间是否有奇数个1，若为，后一个V之前的脉冲解释为0
     int count = 0;   //记录当前下标是第几个,hdb3用到了
-    int v_count_hdb3 = 0;   //两个V之间1的个数，hdb3用
+    int v_count_hdb3 = 0;   //两个V之间1的个数，hdb3用，判断两个V之间是否有奇数个1，若为，后一个V之前的脉冲解释为0
     bool is_first_v_hdb3 = true;   //是否为第一个v，hdb3用
+    bool is_first_h_hdb3 = true;    //出现的第一个脉冲，若此脉冲上跳-为1，若它为下跳-为四连零的v
 
     int swit = ui->comboChannel->currentIndex();
     switch (swit) {
@@ -425,8 +425,6 @@ void MainWindow::on_btnChDecode_clicked()
                     /*  这样判断会存在差分0，导致0数量增多，所以当解释成0后，将上一个电平置成'i'(与电平不同就行)  */
                     last_level = 'i';
                     continue;
-                }else{
-                    last_level = *str;
                 }
             }
             /*  更新上一个电平状态  */
@@ -440,6 +438,8 @@ void MainWindow::on_btnChDecode_clicked()
          * 连续两个相同脉冲，第二个必是四连零中的V脉冲，解释为0
          * 编码时，若两个V脉冲之间偶数个1，则会将四连零中的第一个变成B脉冲 == 那么在解码时，两个V之间将会是奇数个脉冲
          * 那么，解码时，如果有奇数个脉冲，则V之前的脉冲必是B脉冲，解释为0
+         *
+         * 特别的是：当一来就四连零时，V脉冲没有参考，规定：编码时将第一个1设为上翻，一开始就四连零的V设为下翻，以示区别判断
          */
         for (*str; *str != '\0'; str++) {
             if(*str == 'n'){
@@ -449,31 +449,53 @@ void MainWindow::on_btnChDecode_clicked()
                     ui->textChDe->append(QString::asprintf("n 转换为 0"));
                     /*  这样判断会存在差分0，导致0数量增多，所以当解释成0后，将上一个电平置成'i'(与电平不同就行)  */
                     last_level = 'i';
+                    /*  contine前必做的更新操作  */
+                    count++;
                     continue;
-                }else{
-                    last_level = *str;
                 }
-            }else{
-                if(last_h_hdb3 == *str){
-                    /*  连续两个相同属性脉冲，第二个必是V脉冲，将被解释成0  */
-                    channel_decode.append('0');
-                    ui->textChDe->append(QString::asprintf("%c 转换为 0", *str));
-                    /*  判断与上一个V之间1的个数，奇数则将此V前一个脉冲修正解释为0  */
-                    if(v_count_hdb3 % 2 != 0){
-                        /*  修正B脉冲：1解释回0  */
-                        channel_decode.replace(count -3, 1, '0');
-                        ui->textChDe->append(QString::asprintf("修正决定：回退第三个从 1 修正为 0"));
+            }else{   //h or l
+                if(is_first_h_hdb3){
+                    /*  接收到的第一个脉冲，若此脉冲上跳--为1，若它为下跳--为四连零的v  */
+                    if(*str == 'h'){
+                        /*  上跳为1  */
+                        channel_decode.append('1');
+                        ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                    }else if(*str == 'l'){
+                        /*  下跳为四连零的v，解释为0  */
+                        channel_decode.append('0');
+                        ui->textChDe->append(QString::asprintf("l 转换为 0"));
+                        /*  其它的V操作，更新上一个V下标位置、两个v之间的1数量置0  */
+                        v_count_hdb3 = 0;
                     }
-                    /*  更新上一个V下标位置、两个v之间的1数量置0  */
-                    last_indedxOf_v_hdb3 = count;
-                    v_count_hdb3 = 0;
-                    v_count_hdb3 = false;   //不再是第一个v
+                    is_first_h_hdb3 = false;
                 }else{
-                    /*  两个相反脉冲，解释成1  */
-                    channel_decode.append('1');
-                    ui->textChDe->append(QString::asprintf("h 转换为 1"));
-                    if(!is_first_v_hdb3)
-                        v_count_hdb3++;
+                    /*  后续脉冲，与前一个脉冲比较  */
+                    if(last_h_hdb3 == *str){
+                        /*  连续两个相同属性脉冲，第二个必是V脉冲，将被解释成0  */
+                        channel_decode.append('0');
+                        ui->textChDe->append(QString::asprintf("V脉冲：%c 转换为 0", *str));
+                        if(is_first_v_hdb3){
+                            /*  如果是第一个V，将不进行如下判断  */
+                            is_first_v_hdb3 = false;   //不再是第一个v
+                        }else{
+                            /*  判断与上一个V之间1的个数，奇数则将此V前一个脉冲修正解释为0  */
+                            if((v_count_hdb3 % 2) != 0){
+                                /*  修正B脉冲：1解释回0，向前三个0(6个取样周期)  */
+                                channel_decode.replace(count - 6, 1, '0');
+                                ui->textChDe->append(QString::asprintf("修正决定：上一个V脉冲向前数第三个从 1 修正为 0 vsum = %d", v_count_hdb3));
+                            }
+                        }
+                        /*  更新上一个V下标位置、两个v之间的1数量置0  */
+                        v_count_hdb3 = 0;
+                    }else{
+                        /*  两个相反脉冲，解释成1  */
+                        channel_decode.append('1');
+                        ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                        if(!is_first_v_hdb3){
+                            /*  第一个V到达以后所有时间里，计V数量  */
+                            v_count_hdb3++;
+                        }
+                    }
                 }
                 /*  更新上一个脉冲状态  */
                 last_h_hdb3 = *str;  //h or l
@@ -487,26 +509,52 @@ void MainWindow::on_btnChDecode_clicked()
     case 5:
         /*
          * CMI
+         * 前平后高解释成0
+         * 连续两个相同的电平解释成1
+         * 其它不解释
          */
         for (*str; *str != '\0'; str++) {
             if(*str == 'h'){
-                channel_decode.append('1');
-                ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                if(last_level  == 'n'){
+                    /*  前平后高，解释成0  */
+                    channel_decode.append('0');
+                    ui->textChDe->append(QString::asprintf("n h 转换为 0"));
+                }else if(last_level == 'h'){
+                    /*  前高后高，相同电平，解释成1  */
+                    channel_decode.append('1');
+                    ui->textChDe->append(QString::asprintf("h h 转换为 1"));
+                    /*  这样判断会存在差分1，导致1数量增多，所以当解释成1后，将上一个电平置成'i'(与电平不同就行)  */
+                    last_level = 'i';
+                    continue;
+                }
             }else{
-                channel_decode.append('0');
-                swit == 0?
-                ui->textChDe->append(QString::asprintf("n 转换为 0")):
-                ui->textChDe->append(QString::asprintf("l 转换为 0"));
+                if(last_level  == 'n'){
+                    /*  前低后低，相同电平，解释成1  */
+                    channel_decode.append('1');
+                    ui->textChDe->append(QString::asprintf("n n 转换为 1"));
+                    /*  这样判断会存在差分1，导致1数量增多，所以当解释成1后，将上一个电平置成'i'(与电平不同就行)  */
+                    last_level = 'i';
+                    continue;
+                }
             }
+            /*  更新上一个电平状态  */
+            last_level = *str;
         }
         break;
-
     }
 
     /*  打印  */
     ui->textChDe->append("\n\n解码结果：");
     ui->textChDe->append(channel_decode);
     ui->textChDe->append("\n解码完成 ... ... ");
+
+    ui->textSouDe->append(source_code);
+
+
+    if(channel_decode == source_code)
+        qDebug() << "equal";
+    else
+        qDebug() << "not equal";
 }
 
 void MainWindow::on_btnSouDecode_clicked()
@@ -523,4 +571,22 @@ void MainWindow::on_btnJump3_clicked()
      */
 
     on_actionclear_all_triggered();
+}
+
+void MainWindow::on_btnBack1_clicked()
+{
+    /*
+     * 页面回退至0
+     */
+
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_btnBack2_clicked()
+{
+    /*
+     * 页面回退至1
+     */
+
+    ui->stackedWidget->setCurrentIndex(1);
 }

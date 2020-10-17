@@ -72,6 +72,10 @@ private slots:
 
     void on_btnJump3_clicked();
 
+    void on_btnBack1_clicked();
+
+    void on_btnBack2_clicked();
+
 private:
     Ui::MainWindow *ui;
 

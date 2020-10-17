@@ -36,6 +36,16 @@ void ChannelCodeTh::CMI_zero_jump()
     add_point(UpX, h);
 }
 
+void ChannelCodeTh::CMI_hi_jump(qreal range, qreal y)
+{
+    /*  分两次加点，突出最小时钟周期，方便电平识别  */
+
+    UpX += 0.5;
+    add_point(UpX, y + range);
+    UpX += 0.5;
+    add_point(UpX, y + range);
+}
+
 void ChannelCodeTh::top_jump(qreal range)
 {
     qreal y_h = 1 + range, y_n = 0 + range;
@@ -72,13 +82,11 @@ void ChannelCodeTh::buttom_jump(qreal range)
 
 void ChannelCodeTh::HDB3_v_jump(qreal range)
 {
-    if(HDB3_ch_flag){  //应该上翻，上一个是下翻，所以此处下翻
+    if(HDB3_ch_flag){  //应该上翻，上一个是下翻，此处和前一个相同，所以下翻
         buttom_jump(range);
-        last_point.level = 0;
         HDB3_ch_flag = true;  //下一个应该上翻，继续交替
     }else{  //下翻
         top_jump(range);
-        last_point.level = 1;
         HDB3_ch_flag = false;   //下一个应该下翻，继续交替
     }
 }
@@ -144,7 +152,8 @@ void ChannelCodeTh::code_machine(bool now)
 
     qreal range = 0;
     qreal h = 1 + range, n = 0 + range, l = -1 + range;
-    count++;
+    QByteArray bstr = source_code.toLocal8Bit();
+    const char *str = bstr;
 
     switch (way) {
     case 0:
@@ -259,70 +268,93 @@ void ChannelCodeTh::code_machine(bool now)
         break;
 
     case 4:
-        //半即时编码 HDB3
-        if(now){//高电平，直接译码
-            //先打出积累了几个0的平电平
+        /*
+         * 半即时编码 HDB3
+         * last_v_pos.level只有v_jump里面设置了，其它地方需要手动设置
+         */
+        if(now){
+            /*
+             * 高电平，直接译码
+             * 先打出积累了几个0的平电平
+             */
             for(int i = 0; i < HDB3_zero_num; i++){
                 normal_jump(range);
             }
-            //再打V
+            /*  再打1  */
             HDB3_normal_jump(range);
             HDB3_zero_num = 0;
         }else{
-            //低电平，积累0，满4个，译码
-            HDB3_zero_num ++;
-            if(HDB3_zero_num != 4)
+            /*  积累0  */
+            HDB3_zero_num++;
+            /*  不到四个，退出  */
+            if(HDB3_zero_num != 4){
+                count++;
                 break;
+            }
+
             HDB3_zero_num = 0;
-            //第一个v
             if(HDB3_is_first_v){
-                last_point.index = count;
-                //展示前3个0，固定为平，没有B
+                /*  全场出现的第一个V  */
+                HDB3_is_first_v = false;
+                last_v_pos = count;
+                /*  展示前3个0，固定为平，没有B  */
                 for (int i = 0; i < 3; i++) {
                     normal_jump(range);
                 }
-                //检索前面是否有1，若有则和前面1的电平相同
-                for(int i = count; i >=0; i--){
+                /*  反向检索前面是否有1，若有则和前面1的电平相同  */
+                for(int i = count - 1; i >= 0; i--){
                     if(source_code.at(i) == '1'){
                         HDB3_v_jump(range);
-                        HDB3_is_first_v = false;
+                        count++;
                         break;
+                    }else if(i == 0){
+                        /*  若没有1，则它为下翻(如果不是四连零，第一个1将上翻。这样区别开来，为解码作铺垫)  */
+                        buttom_jump(range);
+                        HDB3_ch_flag = true;  //下一个应该上翻，继续交替
+                    }
+                }             
+            }else{
+                /*
+                 * 不是第一个v
+                 * 查看与前一个v之间（不包含上一个v和本v）有奇数还是偶数个1
+                 */
+
+                for (int i = count - 1; i > last_v_pos; i--) {
+                    if(*(str + i) == '1'){
+                        HDB3_one_num++;
+//                        qDebug() << i;
                     }
                 }
-                //若没有1，则它为上翻
-                top_jump(range);
-                HDB3_ch_flag = false;  //下一个应该下翻，继续交替
-                HDB3_is_first_v = false;
-                break;
-            }
-            //不是第一个v
-            //查看与前一个v之间（不包含上一个v）有奇数还是偶数个1
-            for (int i = count; i > last_point.index; i--) {
-                if(source_code.at(i) == '1')
-                    HDB3_one_num++;
-            }
-            last_point.index =count;
-            //奇偶分开译
-            if(HDB3_one_num % 2 == 0){
-                //偶数个1
-                //第一个零变为与前面一个1相反
-                HDB3_normal_jump(range);
-                //中间两个0
-                for (int i = 0; i < 2; i++) {
-                    normal_jump(range);
+//                qDebug() << "-------------";
+//                qDebug() << HDB3_one_num;
+//                qDebug() << last_v_pos;
+//                qDebug() << count;
+//                qDebug() << "-------------";
+
+                last_v_pos = count;
+                //奇偶分开译
+                if(HDB3_one_num % 2 == 0){
+                    /*  偶数个1,第一个零变为与前面一个1相反  */
+                    HDB3_normal_jump(range);
+                    /* 中间两个0  */
+                    for (int i = 0; i < 2; i++) {
+                        normal_jump(range);
+                    }
+                    /* 最后一个零变为与前面一个零相同  */
+                    HDB3_v_jump(range);
+                }else{
+                    /*  奇数个1,展示前3个0，固定为平，没有B  */
+                    for (int i = 0; i < 3; i++) {
+                        normal_jump(range);
+                    }
+                    /*  最后一个v变为与前面一个1电平相同  */
+                    HDB3_v_jump(range);
                 }
-                //最后一个零变为与前面一个零相同
-                HDB3_v_jump(range);
-            }else{
-                //奇数个1
-                //展示前3个0，固定为平，没有B
-                for (int i = 0; i < 3; i++) {
-                    normal_jump(range);
-                }
-                //最后一个v变为与前面一个1电平相同
-                HDB3_v_jump(range);
+                /*  两个V中间1数量清零  */
+                HDB3_one_num = 0;
             }
         }
+        count++;
         break;
 
     case 5:
@@ -332,9 +364,8 @@ void ChannelCodeTh::code_machine(bool now)
             if(now){
                 //加个上升沿
                 add_point(UpX, h);
-                //第一个1高
-                UpX += 1;
-                add_point(UpX, h);
+                /*  设第一个1为高，1是连续两个时钟周期为相同电平，要分两次加点，突出最小时钟周期，方便电平识别  */
+                CMI_hi_jump(range, h);
                 CMI_ch_flag = false;
             }else{
                 CMI_zero_jump();
@@ -345,15 +376,13 @@ void ChannelCodeTh::code_machine(bool now)
                 if(CMI_ch_flag){
                     //高
                     if(last){
-                        //此高，前1，加上升沿
+                        /*  此高，前1，加上升沿，要分两次加点，突出最小时钟周期，方便电平识别  */
                         add_point(UpX, h);
-                        UpX += 1;
-                        add_point(UpX, h);
+                        CMI_hi_jump(range, h);
                         CMI_ch_flag = false;
                     }else{
                         //此高，前0，直接过
-                        UpX += 1;
-                        add_point(UpX, h);
+                        CMI_hi_jump(range, h);
                         CMI_ch_flag = false;
                     }
                 }else{
@@ -361,14 +390,12 @@ void ChannelCodeTh::code_machine(bool now)
                     if(last){
                         //此低，前1，加下降沿
                         add_point(UpX, n);
-                        UpX += 1;
-                        add_point(UpX, n);
+                        CMI_hi_jump(range, n);
                         CMI_ch_flag = true;
                     }else{
                         //此低，前0，加下降沿
                         add_point(UpX, n);
-                        UpX += 1;
-                        add_point(UpX, n);
+                        CMI_hi_jump(range, n);
                         CMI_ch_flag = true;
                     }
                 }
@@ -385,7 +412,7 @@ void ChannelCodeTh::code_machine(bool now)
                         CMI_zero_jump();
                     }
                 }else{
-                    //前0，此0，必加下降沿
+                    //前0，此0，加下降沿
                     add_point(UpX, n);
                     CMI_zero_jump();
                 }
@@ -418,7 +445,6 @@ void ChannelCodeTh::add_point(qreal UpX, qreal Y)
     /*
      * 识别电平
      * 判断上一个Y坐标与这一个Y坐标关系，以裁决是产生了一个高电平还是产生了一个低电平
-     * (每种方式不一样)
      */
     if(last_Y == Y){
         if(Y == 0)
