@@ -29,7 +29,7 @@ void Utils::statistical(QString text, int *count_arr)  //统计字符
     /*    save value    */
     for(*str; *str != '\0'; str++){
         count_arr[int(*str)]++;
-    }     
+    }
 }
 
 void Utils::source_shannon_code(int *count_arr, s_dat *s_code)
@@ -43,7 +43,6 @@ void Utils::source_shannon_code(int *count_arr, s_dat *s_code)
     int total_count = 0;
     double sum_pro = 0;     //累计概率
     double left;    //乘二余数
-    QString ret_string;
 
     /*    赋初值，统计总个数    */
     for(int i = 0; i < CODENUM; i++){
@@ -63,9 +62,9 @@ void Utils::source_shannon_code(int *count_arr, s_dat *s_code)
         s_code[i].probability = (double)int((double(s_code[i].count)/total_count + 0.000005) * 100000)/100000;
     }
 
-    /*    排序    */
+    /*    排序，降序    */
     s_dat temp[CODENUM];
-    MergeSort(s_code, temp, 0, CODENUM -1);
+    s_MergeSort(s_code, temp, 0, CODENUM -1);
 
     /*    计算数据，编码    */
     for(int i = 0; i < CODENUM; i++){
@@ -102,8 +101,101 @@ void Utils::source_shannon_code(int *count_arr, s_dat *s_code)
     }
 }
 
+void Utils::source_feno_code(int *count_arr, f_dat *f_code)
+{
+    /*
+     * 指针接收数组，作传入传出参数
+     *
+     * 费诺编码
+     */
+
+    int total_count = 0;
+
+    /*    赋初值，统计总个数    */
+    for(int i = 0; i < CODENUM; i++){
+        if(count_arr[i] == 0){    //跳过，value就为默认的-1
+            f_code[i].code.value = -1;
+            continue;
+        }
+        f_code[i].count = count_arr[i];
+        f_code[i].code.value = i;
+        total_count += count_arr[i];
+    }
+
+    /*    计算概率    */
+    for(int i = 0; i < CODENUM; i++){
+        if(f_code[i].code.value == -1)
+            continue;
+        //保留五位小数，四舍五入
+        f_code[i].probability = (double)int((double(f_code[i].count)/total_count + 0.000005) * 100000)/100000;
+    }
+
+    /*    排序，降序    */
+    f_dat temp[CODENUM];
+    f_MergeSort(f_code, temp, 0, CODENUM -1);
+
+    /*  编码  */
+    int start = 0;
+    int end = -1;
+    for(int i = 0; i < CODENUM; i++){
+        if(f_code[i].code.value != -1)
+        end++;
+    }
+    Utils::feno_rev(f_code, start, end);
+
+    for(int i = 0; i < CODENUM; i++){
+        if(f_code[i].probability != -1){
+            qDebug() << f_code[i].code.value << " " << f_code->code.codes;
+        }
+    }
+
+}
+
+void Utils::feno_rev(f_dat *f_code, int start, int end)
+{
+    /*
+     * 费诺递归生成编码
+     */
+
+    /*  终止条件  */
+    if(start >= 0){
+
+        return;
+    }
+    int start1 = -1, end1 = -1, start2 = -1, end2 = -1;
+
+    /*  编码  */
+    int i;
+    double rate_count = 0;
+    for(i = 0; i < (end - start); i++){
+        rate_count += f_code[i].probability;
+        /*  当本次累计合到0.5的距离，比下次累计合到0.5的距离小：找到  */
+        if(qAbs(rate_count - 0.5) < qAbs(rate_count + f_code[i + 1].probability - 0.5)){
+            /*  分成两半  */
+            start1 = start;
+            end1 = i;
+            start2 = i + 1;
+            end2 = end;
+            break;
+        }
+    }
+
+    /*  增加编码  */
+    for(int j = start1; j < end1; j++){
+        f_code->code.codes[j] = '0';
+    }
+    for(int j = start2; j < end2; j++){
+        f_code->code.codes[j] = '1';
+    }
+
+    /*  两边分别递归  */
+    feno_rev(f_code, start1, end1);
+    feno_rev(f_code, start2, end2);
+}
+
+
 /*  降序排列  */
-void Utils::MergeSort(s_dat *arr, s_dat *temp, int start, int end)  //归并排序
+void Utils::s_MergeSort(s_dat *arr, s_dat *temp, int start, int end)  //归并排序
 {
     //递归终止条件，只有一个元素时
     if (start >= end)
@@ -112,8 +204,41 @@ void Utils::MergeSort(s_dat *arr, s_dat *temp, int start, int end)  //归并排�
     int len = end - start, mid = (len >> 1) + start;
     int start1 = start, end1 = mid, start2 = mid + 1, end2 = end;
     //左右分别递归
-    MergeSort(arr, temp, start1, end1);
-    MergeSort(arr, temp, start2, end2);
+    s_MergeSort(arr, temp, start1, end1);
+    s_MergeSort(arr, temp, start2, end2);
+    //排序
+    int k = start;  //装在相同的位置
+    while (start1 <= end1 && start2 <= end2) {
+        //两个子数组(逻辑上的)中，挨个比较，大的进入临时数组。进入的才++
+        temp[k++] = arr[start1].probability > arr[start2].probability ? arr[start1++] : arr[start2++];
+    }
+    while (start1 <= end1) {
+        //子数组1(逻辑上的)有剩下没进入的元素
+        temp[k++] = arr[start1++];
+    }
+    while (start2 <= end2) {
+        //子数组2(逻辑上的)有剩下没进入的元素
+        temp[k++] = arr[start2++];
+    }
+    //临时数组还原到原数组，返回供上层继续使用
+    for (int i = start; i <= end; i++)
+    {
+        arr[i] = temp[i];
+    }
+}
+
+/*  降序排列  */
+void Utils::f_MergeSort(f_dat *arr, f_dat *temp, int start, int end)  //归并排序
+{
+    //递归终止条件，只有一个元素时
+    if (start >= end)
+        return;
+    //分成两半，len并不是具体长度，只作为分成两半的条件  右移一位：/2
+    int len = end - start, mid = (len >> 1) + start;
+    int start1 = start, end1 = mid, start2 = mid + 1, end2 = end;
+    //左右分别递归
+    f_MergeSort(arr, temp, start1, end1);
+    f_MergeSort(arr, temp, start2, end2);
     //排序
     int k = start;  //装在相同的位置
     while (start1 <= end1 && start2 <= end2) {

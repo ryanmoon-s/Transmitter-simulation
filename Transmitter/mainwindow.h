@@ -87,6 +87,7 @@ private:
     QString fileSource;  //源文件
     int count_arr[CODENUM]; //统计数组
     s_dat s_code[CODENUM];  //香农编码数组，预留空间够大，能应对所有ASCII码内存在的元素
+    f_dat f_code[CODENUM];  //费诺编码数组
 
     code_t _code_[CODENUM];  //每种信源编码在进行编码时，都将编码需要的二要素(值、码)，赋值到这个数组，信源解码时用这个数组接口
     int _code_num_ = 0;  //上面数组的成员数量，方便查找，更快速

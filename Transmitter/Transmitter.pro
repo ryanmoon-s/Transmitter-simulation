@@ -19,7 +19,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     channelcodeth.cpp \
     dlghelp.cpp \
-    ijstack.cpp \
     main.cpp \
     mainwindow.cpp \
     utils.cpp
@@ -27,7 +26,6 @@ SOURCES += \
 HEADERS += \
     channelcodeth.h \
     dlghelp.h \
-    ijstack.h \
     mainwindow.h \
     utils.h
 

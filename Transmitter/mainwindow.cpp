@@ -102,7 +102,7 @@ void MainWindow::on_btnSumm_clicked()
     /*    translate    */
     for(int i = 0; i < CODENUM; i++){
         if(count_arr[i] != 0){
-            pri.append(QString::asprintf("有 %-3d 个 %c\n\n", count_arr[i], i));
+            pri.append(QString::asprintf("含有 %-2d 个 %c\n\n", count_arr[i], i));
         }
     }
 
@@ -128,10 +128,12 @@ void MainWindow::on_btnCalSource_clicked()
         for(int i = 0; i < CODENUM; i++){
             if(s_code[i].code.value == -1)
                 continue;
-            pri = QString::asprintf("有 %-3d 个 %c ，编码为 %s\n", s_code[i].count, s_code[i].code.value, s_code[i].code.codes);
+            pri = QString::asprintf("含有 %-2d 个 %c  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码：%s\n"
+             , s_code[i].count, s_code[i].code.value, s_code[i].probability, s_code[i].s_probability, s_code[i].log_value, s_code[i].Ki,  s_code[i].code.codes);
             ui->textBrowser1->append(pri);
         }
         break;
+
     }
 
     ui->textBrowser1->append("\n\n\n\n计算编码完成 ... ... ");
@@ -234,13 +236,20 @@ void MainWindow::on_btnStartSouce_clicked()
         break;
     }
 
-    ui->textBrowser1->append("\n\n\n\n编码完成 ... ... ");
+    /*  打印数据  */
+    int zero_count = 0;
+    for(int i = 0; i < source_code.count(); i++){
+        if(source_code.at(i) == "0"){
+            zero_count++;
+        }
+    }
+    ui->textBrowser1->append(QString::asprintf("\n\n\n编码长度：%d\n0数量：%d\n1数量：%d", source_code.count(), zero_count, source_code.count() - zero_count));
+    ui->textBrowser1->append("\n编码完成 ... ... ");
 
-    /*  装载_code_，反序，switch case  */
+    /*  装载_code_，switch case  */
     _code_num_ = 0;
     _code_max_ = 0;
-    for(i = CODENUM - 1; i >= 0; i--){
-        //qDebug() <<  s_code[i].code.value;
+    for(int i = 0; i < CODENUM; i++){
         if(s_code[i].code.value != -1){
             _code_[_code_num_].value = s_code[i].code.value;
             for(int j = 0; j < 16; j++){
@@ -609,10 +618,19 @@ void MainWindow::on_btnChDecode_clicked()
         break;
     }
 
-    /*  打印  */
+    /*  打印数据  */
+    int zero_count = 0;
+    for(int i = 0; i < channel_decode.count(); i++){
+        if(source_code.at(i) == "0"){
+            zero_count++;
+        }
+    }
     ui->textChDe->append("\n\n解码结果：");
     ui->textChDe->append(channel_decode);
+    ui->textChDe->append(QString::asprintf("\n\n\n编码长度：%d\n0数量：%d\n1数量：%d",
+                               channel_decode.count(), zero_count, channel_decode.count() - zero_count));
     ui->textChDe->append("\n解码完成 ... ... ");
+
     /*  按键  */
     ui->btnSouDecode->setEnabled(true);
     ui->btnChDecode->setEnabled(false);
@@ -652,6 +670,56 @@ void MainWindow::on_btnSouDecode_clicked()
      * 长码匹配成短，方案失败
      */
 
+    source_decode.clear();
+    int c_count = channel_decode.count();
+
+    bool find = false; //是否在_code_中匹配到
+    int i, j;
+    int source;  //拷贝源下标
+    QString string;  //匹配子串
+
+    for(i = 0; i < c_count; i++){
+        for(j = i; j < i + _code_max_; j++){   //j为从i到_code_max_的偏移
+            /*
+            qDebug() << "结果串：" <<source_decode;
+            qDebug() << "=========================";
+            qDebug() << "i：" << i << " j：" <<j;
+            */
+
+            /*  制作比较串  */
+            string.clear();
+            for(source = i; source <= j; source++){
+                /*  从i到j(包括j)这一段拷贝到目标  */
+                string.append(channel_decode.at(source));
+            }
+
+            /*  在码元对数组中进行比较  */
+            for(int fix = 0; fix < _code_num_; fix++){
+                if(_code_[fix].codes == string){
+                    /*  i 跳过匹配段长度，要考虑到执行完后i会自动加1 */
+                    i += string.count() - 1;
+                    /*  解码串添加匹配成果  */
+                    source_decode.append(QString::asprintf("%c", _code_[fix].value));
+                    /*  标志位设置(用来跳出j循环，i跳过匹配串长度)  */
+                    find = true;
+                    break;
+                }
+            }
+
+            /*  上面匹配成功  */
+            if(find){
+                find = false;
+                break;  //跳出j循环，i跳过匹配串长度
+            }
+
+            /*  一次最大长度匹配失败，且防止j越界  */
+            if(j == c_count || j == i + _code_max_ - 1){
+                break;
+            }
+
+        }/*  j循环  */
+    }/*  i循环  */
+
     /*
      * 方案三：
      * 规避回退算法：(能避免方案二的长码匹配成短码的问题)
@@ -679,77 +747,78 @@ void MainWindow::on_btnSouDecode_clicked()
      * 第三种方案的栈并未用上。
      */
 
-    source_decode.clear();
-    int c_count = channel_decode.count();
+//    source_decode.clear();
+//    int c_count = channel_decode.count();
 
-    bool find = false; //是否在_code_中匹配到
-    int i, j;
-    int source;  //拷贝源下标
-    QString string;  //匹配子串
-    ijStack stack;  //ij栈
-    elem e;  //接收stack弹出元素
+//    bool find = false; //是否在_code_中匹配到
+//    int i, j;
+//    int source;  //拷贝源下标
+//    QString string;  //匹配子串
+//    ijStack stack;  //ij栈
+//    elem e;  //接收stack弹出元素
 
-    for(i = 0; i < c_count; i++){
-        for(j = i; j < i + _code_max_; j++){   //j为从i到_code_max_的偏移
-            qDebug() << "结果串：" <<source_decode;
-            qDebug() << "=========================";
-            qDebug() << "i：" << i << " j：" <<j;
+//    for(i = 0; i < c_count; i++){
+//        for(j = i; j < i + _code_max_; j++){   //j为从i到_code_max_的偏移
+//            qDebug() << "结果串：" <<source_decode;
+//            qDebug() << "=========================";
+//            qDebug() << "i：" << i << " j：" <<j;
 
-            /*  制作比较串  */
-            string.clear();
-            for(source = i; source <= j; source++){
-                /*  从i到j(包括j)这一段拷贝到目标  */
-                string.append(channel_decode.at(source));
-            }
-            qDebug() << "string：" << string;
+//            /*  制作比较串  */
+//            string.clear();
+//            for(source = i; source <= j; source++){
+//                /*  从i到j(包括j)这一段拷贝到目标  */
+//                string.append(channel_decode.at(source));
+//            }
+//            qDebug() << "string：" << string;
 
-            /*  在码元对数组中进行比较  */
-            for(int fix = 0; fix < _code_num_; fix++){
-                if(_code_[fix].codes == string){
-                    /*  入栈  */
-                    stack.push(i, j);
-                    qDebug() << "push" << "i：" << i << " j：" << j;
-                    /*  i 跳过匹配段长度，要考虑到执行完后i会自动加1 */
+//            /*  在码元对数组中进行比较  */
+//            for(int fix = 0; fix < _code_num_; fix++){
+//                if(_code_[fix].codes == string){
+//                    /*  入栈  */
+//                    stack.push(i, j);
+//                    qDebug() << "push" << "i：" << i << " j：" << j;
+//                    /*  i 跳过匹配段长度，要考虑到执行完后i会自动加1 */
 
-                    i += string.count() - 1;
-                    /*  解码串添加匹配成果  */
-                    source_decode.append(QString::asprintf("%c", _code_[fix].value));
-                    /*  标志位设置(用来跳出j循环，i跳过匹配串长度)  */
-                    find = true;
-                    break;
-                }
-            }
+//                    i += string.count() - 1;
+//                    /*  解码串添加匹配成果  */
+//                    source_decode.append(QString::asprintf("%c", _code_[fix].value));
+//                    /*  标志位设置(用来跳出j循环，i跳过匹配串长度)  */
+//                    find = true;
+//                    break;
+//                }
+//            }
 
-            /*  上面匹配成功  */
-            if(find){
-                find = false;
-                qDebug() << "jump to：" << "i：" << i + 1 << " j：" << i + 1;
-                break;  //跳出j循环，i跳过匹配串长度
-            }
+//            /*  上面匹配成功  */
+//            if(find){
+//                find = false;
+//                qDebug() << "jump to：" << "i：" << i + 1 << " j：" << i + 1;
+//                break;  //跳出j循环，i跳过匹配串长度
+//            }
 
-            /*  防止j越界  */
-            /*  一次最大长度匹配失败  */
-            if(j == c_count || j == i + _code_max_ - 1){
-                /*  解码串回删一个  */
-                source_decode.remove(source_decode.count() - 1, 1);
-                /*  出栈  */
-                e = stack.pop();
-                if(e.i != -1){
-                    /*  栈未空，还原现场  */
-                    i = e.i;
-                    j = e.j;
-                    qDebug() << "backto：" << "i：" << i << " j：" << j;
-                }else{
-                    /*  栈空，跳过一个i循环。i正常+1  */
-                    qDebug() << "stack empty" ;
-                    break;
-                }
-            }
+//            /*  防止j越界  */
+//            /*  一次最大长度匹配失败  */
+//            if(j == c_count || j == i + _code_max_ - 1){
+//                /*  解码串回删一个  */
+//                source_decode.remove(source_decode.count() - 1, 1);
+//                /*  出栈  */
+//                e = stack.pop();
+//                if(e.i != -1){
+//                    /*  栈未空，还原现场  */
+//                    i = e.i;
+//                    j = e.j;
+//                    qDebug() << "backto：" << "i：" << i << " j：" << j;
+//                }else{
+//                    /*  栈空，跳过一个i循环。i正常+1  */
+//                    qDebug() << "stack empty" ;
+//                    break;
+//                }
+//            }
 
-        }/*  j循环  */
-    }/*  i循环  */
+//        }/*  j循环  */
+//    }/*  i循环  */
 
     ui->textSouDe->append(source_decode);
+    ui->textSouDe->append("\n\n\n\n解码完成 ... ... ");
 }
 
 void MainWindow::on_btnJump3_clicked()
