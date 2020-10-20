@@ -119,10 +119,15 @@ void ChannelCodeTh::run()
             emit update_line_code(1);
 
             /*  发给编码器进行信道编码  */
-            code_machine(true);
+            code_machine(true, false);
         }else{
             emit update_line_code(0);
-            code_machine(false);
+            if(*(str + 1) == '\0'){
+                /*  这是最后一个0，刷新出积累的0  */
+                code_machine(false, true);
+            }else{
+                code_machine(false, false);
+            }
         }
         /*  时速控制，十档延时  */
         msleep(20*(11-index));
@@ -134,7 +139,7 @@ void ChannelCodeTh::run()
 }
 
 
-void ChannelCodeTh::code_machine(bool now)
+void ChannelCodeTh::code_machine(bool now, bool flush)
 {
     /*
      * 输入一个电平，由此函数执行编码，产生高低电平，控制chart绘制模拟
@@ -276,6 +281,8 @@ void ChannelCodeTh::code_machine(bool now)
             /*
              * 高电平，直接译码
              * 先打出积累了几个0的平电平
+             * 要么出现1直接转、要么四个零转，最后如果是四个零以内，就得不到输出。设置flush标志位。如果传true进来，说明是最后一位，且是0
+             *      应该刷新出积累的0
              */
             for(int i = 0; i < HDB3_zero_num; i++){
                 normal_jump(range);
@@ -286,6 +293,12 @@ void ChannelCodeTh::code_machine(bool now)
         }else{
             /*  积累0  */
             HDB3_zero_num++;
+            /*  是否是最后一个0，是就刷新出积累的0  */
+            if(flush){
+                for(int i = 0; i < HDB3_zero_num; i++){
+                    normal_jump(range);
+                }
+            }
             /*  不到四个，退出  */
             if(HDB3_zero_num != 4){
                 count++;
@@ -322,15 +335,8 @@ void ChannelCodeTh::code_machine(bool now)
                 for (int i = count - 1; i > last_v_pos; i--) {
                     if(*(str + i) == '1'){
                         HDB3_one_num++;
-//                        qDebug() << i;
                     }
                 }
-//                qDebug() << "-------------";
-//                qDebug() << HDB3_one_num;
-//                qDebug() << last_v_pos;
-//                qDebug() << count;
-//                qDebug() << "-------------";
-
                 last_v_pos = count;
                 //奇偶分开译
                 if(HDB3_one_num % 2 == 0){

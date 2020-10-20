@@ -69,7 +69,7 @@ private:
     void HDB3_v_jump(qreal range);   //v高电平跳转与前一个相同
     void HDB3_normal_jump(qreal range);   //正常高电平跳转，与前一个相反
 
-    void code_machine(bool now);
+    void code_machine(bool now, bool flush);  //信道编码器，flush为：是否是最后一个0的标志
     void add_point(qreal UpX, qreal Y);  //添加点
 
 signals:
