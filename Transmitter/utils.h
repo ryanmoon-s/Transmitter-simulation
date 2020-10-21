@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 #define CODENUM 128    //码元数量
-#define DEBUG
+//#define DEBUG
 
 #include <QString>
 #include <QDebug>

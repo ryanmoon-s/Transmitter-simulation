@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     /*  设置状态栏   */
-    QLabel *design = new QLabel("一舍5+4独家赞助，更多详情请点帮助-使用说明。");
+    QLabel *design = new QLabel("一舍5+4出品，更多详情请点击帮助-使用说明。");
 
     QFont font = design->font();
     font.setPointSize(12);
@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     pa.setColor(QPalette::WindowText, color);
     design->setPalette(pa);
 
-    ui->statusbar->addWidget(design);
+    ui->statusBar->addWidget(design);
 
     /*  按键   */
     ui->btnJump1->setEnabled(false);
@@ -96,15 +96,14 @@ void MainWindow::on_btnOpenFile_clicked()
      * 打开文件，导入数据
      */
 
-    ui->btnSumm->setEnabled(true);
 #ifdef DEBUG
     QString filename = "G:/text.txt";
 #else
     QString filename = QFileDialog::getOpenFileName(this, "选择一个文本文件", QDir::currentPath(), "文本文件(*.txt)");
-
 #endif
-     if(filename.isEmpty()){
+    if(filename.isEmpty()){
         QMessageBox::warning(this, "警告", "取消选择文件");
+        return;
     }else{
         file.setFileName(filename);
         if(!file.open(QIODevice::ReadOnly)){
@@ -118,6 +117,8 @@ void MainWindow::on_btnOpenFile_clicked()
         ui->textBrowser1->append(fileSource);
         ui->textBrowser1->append("\n\n\n\n文件加载完成 ... ... ");
     }
+
+    ui->btnSumm->setEnabled(true);
 }
 
 void MainWindow::on_btnSumm_clicked()

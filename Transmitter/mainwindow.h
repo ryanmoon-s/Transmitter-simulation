@@ -79,8 +79,6 @@ private slots:
 
     void on_btnBack2_clicked();
 
-    void on_comboSource_activated(const QString &arg1);
-
 private:
     Ui::MainWindow *ui;
 
