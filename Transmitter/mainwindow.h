@@ -79,8 +79,12 @@ private slots:
 
     void on_btnBack2_clicked();
 
+    void on_comboSource_activated(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
+
+    QFile file;
 
     /*    信源编码   */
     QString fileSource;  //源文件
@@ -112,6 +116,9 @@ private:
 
 signals:
     void adjest_speed(int index);
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 };
 #endif // MAINWINDOW_H

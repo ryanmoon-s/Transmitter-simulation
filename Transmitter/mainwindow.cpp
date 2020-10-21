@@ -33,11 +33,33 @@ MainWindow::MainWindow(QWidget *parent)
     /*  other   */
     create_chart();
     th = NULL;
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);  //抗锯齿
+
+    QPen pen(Qt::NoPen);
+    painter.setPen(pen);
+
+    QBrush brush;
+    QColor color(255, 255, 255, 205);
+    brush.setColor(color);
+    brush.setStyle(Qt::SolidPattern);
+    painter.setBrush(brush);
+
+    QRect rect(0, 0, width(), height());
+
+    painter.drawRect(rect);
 }
 
 void MainWindow::huff_code(h_dat *root, int deepth, h_dat **h_code, int *index)
@@ -84,7 +106,7 @@ void MainWindow::on_btnOpenFile_clicked()
      if(filename.isEmpty()){
         QMessageBox::warning(this, "警告", "取消选择文件");
     }else{
-        QFile file(filename);
+        file.setFileName(filename);
         if(!file.open(QIODevice::ReadOnly)){
             QMessageBox::warning(this, "警告", "打开文件失败");
             return;
@@ -103,6 +125,11 @@ void MainWindow::on_btnSumm_clicked()
     /*
      * 统计字符出现次数
      */
+
+    /*  主流程开始时，还原要用到的变量  */
+    for(int i = 0; i < CODENUM; i++){
+        count_arr[i] = 0;
+    }
 
     ui->btnCalSource->setEnabled(true);
     ui->btnStartSouce->setEnabled(false);
@@ -129,6 +156,19 @@ void MainWindow::on_btnCalSource_clicked()
     /*
      * 展示信源编码方式，什么编成什么。
      */
+
+    /*  主流程开始时，还原要用到的变量  */
+    for(int i = 0; i < CODENUM; i++){
+        s_code[i].code.value = -1;
+        s_code[i].code.codes.clear();
+        s_code[i].probability = -1;
+        s_code[i].s_probability = 0;
+        f_code[i].code.value = -1;
+        f_code[i].probability = -1;
+        f_code[i].code.codes.clear();
+        h_code[i] = NULL;
+        _code_[i].value = -1;
+    }
 
     ui->btnCalSource->setEnabled(false);
     ui->btnStartSouce->setEnabled(true);
@@ -196,7 +236,6 @@ void MainWindow::on_actionclear_all_triggered()
     /*  信源编码页面重置  */
     source_code.clear();
     ui->btnJump1->setEnabled(false);
-    ui->btnSumm->setEnabled(false);
     ui->btnCalSource->setEnabled(false);
     ui->btnStartSouce->setEnabled(false);
     ui->btnSouDecode->setEnabled(false);
@@ -239,7 +278,6 @@ void MainWindow::on_comboSource_currentIndexChanged(int index)
     ui->btnCalSource->setEnabled(false);
     ui->btnStartSouce->setEnabled(false);
     ui->btnJump1->setEnabled(false);
-    ui->btnSumm->setEnabled(false);
 
     /*  清空操作  */
     ui->textBrowser1->clear();
@@ -279,7 +317,7 @@ void MainWindow::on_btnStartSouce_clicked()
         /*    制作字符串    */
         for(*str; *str != '\0'; str++){
             /*  找到编码  */
-            for (i = 0; i < code_arr_count; i++) {
+            for (i = 0; i < CODENUM; i++) {
                 if(s_code[i].code.value == int(*str)){
                     break;
                 }
@@ -287,7 +325,7 @@ void MainWindow::on_btnStartSouce_clicked()
             source_code.append(s_code[i].code.codes);
         }
         /*  装载_code_，switch case  */
-        for(int i = 0; i < code_arr_count; i++){
+        for(int i = 0; i < CODENUM; i++){
             if(s_code[i].code.value != -1){
                 _code_[_code_num_].value = s_code[i].code.value;
                 _code_[_code_num_].codes = s_code[i].code.codes;
@@ -305,7 +343,7 @@ void MainWindow::on_btnStartSouce_clicked()
         /*    制作字符串    */
         for(*str; *str != '\0'; str++){
             /*  找到编码  */
-            for (i = 0; i < code_arr_count; i++) {
+            for (i = 0; i < CODENUM; i++) {
                 if(f_code[i].code.value == int(*str)){
                     break;
                 }
@@ -313,7 +351,7 @@ void MainWindow::on_btnStartSouce_clicked()
             source_code.append(f_code[i].code.codes);
         }
         /*  装载_code_，switch case  */
-        for(int i = 0; i < code_arr_count; i++){
+        for(int i = 0; i < CODENUM; i++){
             if(f_code[i].code.value != -1){
                 _code_[_code_num_].value = f_code[i].code.value;
                 _code_[_code_num_].codes = f_code[i].code.codes;
@@ -360,6 +398,7 @@ void MainWindow::on_btnStartSouce_clicked()
             zero_count++;
         }
     }
+    ui->textBrowser1->append("编码结果：");
     ui->textBrowser1->append(source_code);
     ui->textBrowser1->append(QString::asprintf("\n\n\n编码长度：%d\n0数量：%d\n1数量：%d", source_code.count(), zero_count, source_code.count() - zero_count));
     ui->textBrowser1->append("\n编码完成 ... ... ");
@@ -406,7 +445,7 @@ void MainWindow::create_chart()
 
     /*  创建图表  */
     chart = new QChart();
-    chart->setTitle("广告位招租");
+    chart->setTitle("模拟电平状态");
     ui->chartView->setChart(chart);
 
     /*  创建坐标轴  */
@@ -735,10 +774,10 @@ void MainWindow::on_btnChDecode_clicked()
     ui->btnSouDecode->setEnabled(true);
     ui->btnChDecode->setEnabled(false);
 
-    if(channel_decode == source_code)
-        qDebug() << "equal" << endl;
-    else
-        qDebug() << "not equal" << endl;
+//    if(channel_decode == source_code)
+//        qDebug() << "equal" << endl;
+//    else
+//        qDebug() << "not equal" << endl;
 }
 
 void MainWindow::on_btnSouDecode_clicked()
@@ -761,15 +800,12 @@ void MainWindow::on_btnSouDecode_clicked()
     int i, j;
     int source;  //拷贝源下标
     QString string;  //匹配子串
+    QString temp;
+    QByteArray bstr;
+    const char* str;
 
     for(i = 0; i < c_count; i++){
         for(j = i; j < i + _code_max_; j++){   //j为从i到_code_max_的偏移
-            /*
-            qDebug() << "结果串：" <<source_decode;
-            qDebug() << "=========================";
-            qDebug() << "i：" << i << " j：" <<j;
-            */
-
             /*  制作比较串  */
             string.clear();
             for(source = i; source <= j; source++){
@@ -783,6 +819,10 @@ void MainWindow::on_btnSouDecode_clicked()
                     /*  i 跳过匹配段长度，要考虑到执行完后i会自动加1 */
                     i += string.count() - 1;
                     /*  解码串添加匹配成果  */
+                    bstr = string.toLocal8Bit();
+                    str = bstr;
+                    temp = QString::asprintf("检测到序列：%-10s 译为：%c", str, _code_[fix].value);
+                    ui->textSouDe->append(temp);
                     source_decode.append(QString::asprintf("%c", _code_[fix].value));
                     /*  标志位设置(用来跳出j循环，i跳过匹配串长度)  */
                     find = true;
@@ -804,6 +844,7 @@ void MainWindow::on_btnSouDecode_clicked()
         }/*  j循环  */
     }/*  i循环  */
 
+    ui->textSouDe->append("\n\n解码结果：");
     ui->textSouDe->append(source_decode);
     ui->textSouDe->append("\n\n\n\n解码完成 ... ... ");
 }
