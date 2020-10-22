@@ -1,0 +1,120 @@
+/*  按钮  */
+QPushButton{
+	border: 1px solid white;/*设置边框的粗细，以及颜色*/
+	border-radius: 6px;/*设置圆角的大小*/
+	color:rgb(40,40,40);
+	background:transparent;
+		background-color:rgb(255,255,255,80);
+}
+
+/* #btnOpenFile
+,#btnSumm,#btnCalSource,#btnStartSouce,#btnJump1,#btnChStart,
+#btnBack1,#btnJump2,#btnBack2,#btnJump3,#btnChDecode,#btnSouDecode: */
+
+QPushButton:pressed{
+	border-style:inset;
+	color:white;
+	background-color:white;
+	position:absolute;
+	top:5px;
+	left:5px
+}
+
+QPushButton:hover{
+	border-style:inset;
+	color:white;
+	background-color:rgb(89,117,120);
+	position:absolute;
+	top:10px;
+	left:10px
+}
+
+QPushButton:disabled{
+	border-style:inset;
+	color:white;
+	background-color:rgb(182,181,183);
+	position:absolute;
+	top:5px;
+	left:5px
+}
+
+/*  分组  */
+QGroupBox{
+	background:transparent;
+	border-width:0;
+	color:black;
+	font-size:16px;
+	border: 1px solid white;
+	padding-top:14px;
+}
+
+
+/*  行编辑框  */
+QLineEdit{
+	border: 1px solid gray;/*设置边框的粗细，以及颜色*/
+	border-radius: 5px;/*设置圆角的大小*/
+	background-color: rgba(245, 245, 245, 220);
+}
+
+/*  ComboBox  */
+QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 2px 1px 2px;  
+    min-width: 9em;   
+	background-color: rgb(207,216,231);
+}
+
+QComboBox:drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+	
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; 
+    border-top-right-radius: 3px; 
+    border-bottom-right-radius: 3px;
+}
+
+
+QComboBox QAbstractItemView {
+    border: 2px solid darkgray;
+    selection-background-color: rgb(207,216,231);
+}
+
+/* 当下拉框打开时,背景颜色渐变 */
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                stop: 0.5 #DDDDDD, stop: 1.0 #BBBBBB);
+}
+
+/*  QTextBrowser  */
+QTextBrowser{
+	background:transparent;
+	background-color:rgba(255,255,255,80);
+	border-width:0;
+	color:black;
+	font: 20px "黑体";
+	border: 1px solid white
+}
+
+/*  QGraphicsView  */
+QGraphicsView{
+	background:transparent;
+	background-color:rgba(255,255,255,80);
+	border-width:0;
+	color:black;
+	border: 1px solid white
+}
+
+/*  QSpinBox*/
+QAbstractSpinBox
+{
+    border: 1px solid rgb(255,255,255,80);
+    font: 10pt "微软雅黑";
+    color: black;
+	background:transparent;
+	background-color:rgb(255,255,255,80);	
+}
