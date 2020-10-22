@@ -2,6 +2,7 @@
 #define DLGHELP_H
 
 #include <QDialog>
+#include <QtWidgets>
 
 namespace Ui {
 class DlgHelp;
@@ -17,6 +18,9 @@ public:
 
 private:
     Ui::DlgHelp *ui;
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // DLGHELP_H

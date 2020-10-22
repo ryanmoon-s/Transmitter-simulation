@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     font.setItalic(true);
     design->setFont(font);
 
-    QColor color(50, 50, 50);
+    QColor color(255, 255, 255);
     QPalette pa;
     pa.setColor(QPalette::WindowText, color);
     design->setPalette(pa);
@@ -34,7 +34,15 @@ MainWindow::MainWindow(QWidget *parent)
     create_chart();
     th = NULL;
 
-    /*  窗口设置  */
+    /*  QSS引入  */
+    QDir qssdir = QApplication::applicationDirPath();
+    QString qsspath = qssdir.path() + "/QtStyleSheet.qss";
+    QFile qssFile(qsspath);
+    qssFile.open(QFile::ReadOnly);
+    QTextStream stream(&qssFile);
+    QString stylesheet = stream.readAll();
+    this->setStyleSheet(stylesheet);
+    qssFile.close();
 }
 
 MainWindow::~MainWindow()
@@ -47,18 +55,21 @@ void MainWindow::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);  //抗锯齿
-
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
     QPen pen(Qt::NoPen);
+    QRect rect(0, 0, width(), height());
+    painter.setRenderHint(QPainter::Antialiasing);  //抗锯齿
     painter.setPen(pen);
 
-    QBrush brush;
-    QColor color(255, 255, 255, 205);
-    brush.setColor(color);
-    brush.setStyle(Qt::SolidPattern);
-    painter.setBrush(brush);
+    /*  背景图  */
+    QPixmap map(":/new/prefix1/src/bk.jpg");
+    painter.drawPixmap(rect, map);
 
-    QRect rect(0, 0, width(), height());
+    /*  蒙板  */
+    QColor color(245, 245, 245, 40);
+    brush.setColor(color);
+    painter.setBrush(brush);
 
     painter.drawRect(rect);
 }
@@ -197,19 +208,19 @@ void MainWindow::on_btnCalSource_clicked()
         for(int i = 0; i < CODENUM; i++){
             if(s_code[i].code.value != -1){
                 if(s_code[i].code.value == 9){
-                    pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                    pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else if(s_code[i].code.value == 10){
-                    pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                    pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else if(s_code[i].code.value == 13){
-                    pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                    pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else{
-                    pri = QString::asprintf("含有 %-2d 个 %-2c  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                    pri = QString::asprintf("含有 %-2d 个 %-2c  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].code.value, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }
@@ -522,6 +533,9 @@ void MainWindow::create_chart()
     chart->setAxisY(axisY, series);
     /*  标题  */
     series->setName(ui->comboChannel->currentText());
+    QFont chart_font = chart->font();
+    chart_font.setPointSize(10);
+    chart->setTitleFont(chart_font);
 }
 
 
@@ -544,7 +558,7 @@ void MainWindow::ch_code_finished()
      */
 
     ui->btnJump2->setEnabled(true);
-    QMessageBox::information(this, "提示", "信道编码已经结束");
+    QMessageBox::information(this, "提示", "信道编码已经结束", QMessageBox::Ok);
 }
 
 void MainWindow::push_rec_ch(char c)

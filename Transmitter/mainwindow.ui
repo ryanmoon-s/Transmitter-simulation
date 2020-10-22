@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1170</width>
-    <height>730</height>
+    <width>1203</width>
+    <height>787</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,11 @@
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox">
+          <property name="font">
+           <font>
+            <family>微软雅黑</family>
+           </font>
+          </property>
           <property name="title">
            <string>信源编码</string>
           </property>
@@ -74,7 +79,7 @@
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>30</height>
+                 <height>32</height>
                 </size>
                </property>
                <item>
@@ -98,7 +103,7 @@
               <widget class="QLabel" name="label">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -136,7 +141,16 @@
             </layout>
            </item>
            <item row="2" column="0">
-            <widget class="QTextBrowser" name="textBrowser1"/>
+            <widget class="QTextBrowser" name="textBrowser1">
+             <property name="font">
+              <font>
+               <family>黑体</family>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+            </widget>
            </item>
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,1,8">
@@ -196,6 +210,11 @@
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox_2">
+          <property name="font">
+           <font>
+            <family>微软雅黑</family>
+           </font>
+          </property>
           <property name="title">
            <string>信道编码</string>
           </property>
@@ -204,7 +223,7 @@
             <widget class="QLabel" name="label_8">
              <property name="font">
               <font>
-               <family>Agency FB</family>
+               <family>微软雅黑</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -229,6 +248,9 @@
                  <height>30</height>
                 </size>
                </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="0" column="0">
@@ -241,10 +263,8 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
-                 <weight>50</weight>
-                 <bold>false</bold>
                 </font>
                </property>
                <property name="text">
@@ -265,7 +285,7 @@
               <widget class="QLabel" name="labSourceCode">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -290,19 +310,25 @@
             </layout>
            </item>
            <item row="1" column="0">
-            <layout class="QGridLayout" name="gridLayout_8" columnstretch="1,4,2,1,1,3,2,9">
+            <layout class="QGridLayout" name="gridLayout_8" columnstretch="1,5,3,1,1,3,2,9">
              <property name="leftMargin">
               <number>10</number>
              </property>
              <property name="rightMargin">
               <number>15</number>
              </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>7</number>
+             </property>
              <item row="0" column="1">
               <widget class="QComboBox" name="comboChannel">
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>30</height>
+                 <height>32</height>
                 </size>
                </property>
                <item>
@@ -341,7 +367,7 @@
               <widget class="QLabel" name="label_4">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -354,8 +380,8 @@
               <widget class="QSpinBox" name="spinBox">
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
-                 <height>25</height>
+                 <width>48</width>
+                 <height>27</height>
                 </size>
                </property>
                <property name="minimum">
@@ -412,7 +438,7 @@
               <widget class="QLabel" name="label_3">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -437,7 +463,11 @@
             </layout>
            </item>
            <item row="4" column="0">
-            <widget class="QPlainTextEdit" name="textRecCh"/>
+            <widget class="QTextBrowser" name="textRecCh">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0">
             <widget class="QChartView" name="chartView">
@@ -446,6 +476,9 @@
                <width>0</width>
                <height>390</height>
               </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
              </property>
             </widget>
            </item>
@@ -458,12 +491,21 @@
        <layout class="QGridLayout" name="gridLayout_10">
         <item row="1" column="0">
          <widget class="QGroupBox" name="groupBox_3">
+          <property name="font">
+           <font>
+            <family>微软雅黑</family>
+           </font>
+          </property>
           <property name="title">
            <string>信道解码</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
            <item row="2" column="0">
-            <widget class="QTextBrowser" name="textChDe"/>
+            <widget class="QTextBrowser" name="textChDe">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+            </widget>
            </item>
            <item row="1" column="0">
             <widget class="QPushButton" name="btnChDecode">
@@ -489,12 +531,21 @@
             <height>300</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>微软雅黑</family>
+           </font>
+          </property>
           <property name="title">
            <string>信源解码</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_12">
            <item row="1" column="0">
-            <widget class="QTextBrowser" name="textSouDe"/>
+            <widget class="QTextBrowser" name="textSouDe">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+            </widget>
            </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="btnSouDecode">
@@ -520,10 +571,18 @@
             <height>65</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>微软雅黑</family>
+           </font>
+          </property>
           <property name="title">
            <string>控制</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_15" columnstretch="1,1,1,15,2,10">
+           <property name="horizontalSpacing">
+            <number>10</number>
+           </property>
            <item row="0" column="5">
             <widget class="QPushButton" name="btnJump3">
              <property name="minimumSize">
@@ -556,7 +615,7 @@
               <widget class="QLabel" name="label_5">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -569,7 +628,7 @@
               <widget class="QLabel" name="lab_Chde">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -586,7 +645,7 @@
               <widget class="QLabel" name="label_7">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -599,7 +658,7 @@
               <widget class="QLabel" name="lab_SouDe">
                <property name="font">
                 <font>
-                 <family>Agency FB</family>
+                 <family>微软雅黑</family>
                  <pointsize>10</pointsize>
                 </font>
                </property>
@@ -650,7 +709,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1170</width>
+     <width>1203</width>
      <height>26</height>
     </rect>
    </property>
@@ -668,17 +727,6 @@
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
-  </widget>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>BottomToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionclear_all">
