@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     create_chart();
     th = NULL;
 
+    /*  窗口设置  */
 }
 
 MainWindow::~MainWindow()
@@ -143,7 +144,15 @@ void MainWindow::on_btnSumm_clicked()
     /*    translate    */
     for(int i = 0; i < CODENUM; i++){
         if(count_arr[i] != 0){
-            pri.append(QString::asprintf("含有 %-2d 个 %c\n\n", count_arr[i], i));
+            if(i == 9){
+                pri.append(QString::asprintf("含有 %-2d 个 \\t\n\n", count_arr[i]));
+            }else if(i == 10){
+                pri.append(QString::asprintf("含有 %-2d 个 \\n\n\n", count_arr[i]));
+            }else if(i == 13){
+                pri.append(QString::asprintf("含有 %-2d 个 \\r\n\n", count_arr[i]));
+            }else{
+                pri.append(QString::asprintf("含有 %-2d 个 %2c\n\n", count_arr[i], i));
+            }
         }
     }
 
@@ -187,9 +196,23 @@ void MainWindow::on_btnCalSource_clicked()
         Utils::source_shannon_code(count_arr, s_code);
         for(int i = 0; i < CODENUM; i++){
             if(s_code[i].code.value != -1){
-                pri = QString::asprintf("含有 %-2d 个 %c  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
-                 , s_code[i].count, s_code[i].code.value, s_code[i].probability, s_code[i].s_probability,
-                                        s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
+                if(s_code[i].code.value == 9){
+                    pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                                            , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
+                                            s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
+                }else if(s_code[i].code.value == 10){
+                    pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                                            , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
+                                            s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
+                }else if(s_code[i].code.value == 13){
+                    pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                                            , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
+                                            s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
+                }else{
+                    pri = QString::asprintf("含有 %-2d 个 %-2c  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%d  编码："
+                                            , s_code[i].count, s_code[i].code.value, s_code[i].probability, s_code[i].s_probability,
+                                            s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
+                }
                 ui->textBrowser1->append(pri);
             }
         }
@@ -200,8 +223,20 @@ void MainWindow::on_btnCalSource_clicked()
         Utils::source_feno_code(count_arr, f_code);
         for(int i = 0; i < CODENUM; i++){
             if(f_code[i].code.value != -1){
-                pri = QString::asprintf("含有 %-2d 个 %c  概率：%-4f  编码："
-                 ,f_code[i].count, f_code[i].code.value,  f_code[i].probability) + f_code[i].code.codes + "\n";
+                if(f_code[i].code.value == 9){
+                    pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  编码："
+                                            ,f_code[i].count, f_code[i].probability) + f_code[i].code.codes + "\n";
+                }else if(f_code[i].code.value == 10){
+                    pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  编码："
+                                            ,f_code[i].count, f_code[i].probability) + f_code[i].code.codes + "\n";
+                }else if(f_code[i].code.value == 13){
+                    pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  编码："
+                                            ,f_code[i].count, f_code[i].probability) + f_code[i].code.codes + "\n";
+                }else{
+
+                    pri = QString::asprintf("含有 %-2d 个 %-2c  概率：%-4f  编码："
+                                            ,f_code[i].count, f_code[i].code.value,  f_code[i].probability) + f_code[i].code.codes + "\n";
+                }
                 ui->textBrowser1->append(pri);
             }
         }
@@ -217,8 +252,19 @@ void MainWindow::on_btnCalSource_clicked()
         Utils::h_MergeSort(h_code, temp, 0, code_arr_count - 1);
         /*  打印编码  */
         for(int i = 0; i < code_arr_count; i++){
-            pri = QString::asprintf("含有 %-2d 个 %c  概率：%-4f  编码："
-                      ,h_code[i]->count, h_code[i]->code.value,  h_code[i]->probability) + h_code[i]->code.codes + "\n";
+            if(h_code[i]->code.value == 9){
+                pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  编码："
+                                        ,h_code[i]->count, h_code[i]->probability) + h_code[i]->code.codes + "\n";
+            }else if(h_code[i]->code.value == 10){
+                pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  编码："
+                                        ,h_code[i]->count, h_code[i]->probability) + h_code[i]->code.codes + "\n";
+            }else if(h_code[i]->code.value == 13){
+                pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  编码："
+                                        ,h_code[i]->count, h_code[i]->probability) + h_code[i]->code.codes + "\n";
+            }else{
+                pri = QString::asprintf("含有 %-2d 个 %c  概率：%-4f  编码："
+                                        ,h_code[i]->count, h_code[i]->code.value,  h_code[i]->probability) + h_code[i]->code.codes + "\n";
+            }
             ui->textBrowser1->append(pri);
         }
 
@@ -347,6 +393,9 @@ void MainWindow::on_btnStartSouce_clicked()
             for (i = 0; i < CODENUM; i++) {
                 if(f_code[i].code.value == int(*str)){
                     break;
+                }else if(i == CODENUM -1){
+                    QMessageBox::warning(this, "警告", "出现无法识别字符，请检查！\ntips：本软件仅支持英文字符！");
+                    return;
                 }
             }
             source_code.append(f_code[i].code.codes);
@@ -373,6 +422,9 @@ void MainWindow::on_btnStartSouce_clicked()
             for (i = 0; i < code_arr_count; i++) {
                 if(h_code[i]->code.value == int(*str)){
                     break;
+                }else if(i == code_arr_count -1){
+                    QMessageBox::warning(this, "警告", "出现无法识别字符，请检查！\ntips：本软件仅支持英文字符！");
+                    return;
                 }
             }
             source_code.append(h_code[i]->code.codes);
@@ -503,11 +555,15 @@ void MainWindow::push_rec_ch(char c)
      * 此处取出文本内容，加上字符，写回去
      */
 
-    QString str;
-    str = ui->textRecCh->document()->toPlainText();
-    str.append(c);
-    ui->textRecCh->clear();
-    ui->textRecCh->append(str);
+//此方法太占用cpu资源，导致界面卡顿
+//    QString str;
+//    str = ui->textRecCh->document()->toPlainText();
+//    str.append(c);
+//    ui->textRecCh->clear();
+//    ui->textRecCh->append(str);
+
+    ui->textRecCh->moveCursor(QTextCursor::End);
+    ui->textRecCh->insertPlainText(QString::asprintf("%c", c));
 }
 
 void MainWindow::on_spinBox_valueChanged(int arg1)
@@ -805,6 +861,10 @@ void MainWindow::on_btnSouDecode_clicked()
     QByteArray bstr;
     const char* str;
 
+    QString format;
+    QByteArray format_t;
+    const char *format_u;
+
     for(i = 0; i < c_count; i++){
         for(j = i; j < i + _code_max_; j++){   //j为从i到_code_max_的偏移
             /*  制作比较串  */
@@ -822,7 +882,36 @@ void MainWindow::on_btnSouDecode_clicked()
                     /*  解码串添加匹配成果  */
                     bstr = string.toLocal8Bit();
                     str = bstr;
-                    temp = QString::asprintf("检测到序列：%-10s 译为：%c", str, _code_[fix].value);
+                    switch (_code_[fix].value){
+                    case 9:
+                        /*  动态改变序列长度  */
+                        format= "检测到序列：%-" + QString::number(_code_max_) + "s 译为：\\t";
+                        format_t = format.toUtf8();
+                        format_u = format_t;
+                        temp = QString::asprintf(format_u, str);
+                        break;
+                    case 10:
+                        /*  动态改变序列长度  */
+                        format= "检测到序列：%-" + QString::number(_code_max_) + "s 译为：\\n";
+                        format_t = format.toUtf8();
+                        format_u = format_t;
+                        temp = QString::asprintf(format_u, str);
+                        break;
+                    case 13:
+                        /*  动态改变序列长度  */
+                        format= "检测到序列：%-" + QString::number(_code_max_) + "s 译为：\\r";
+                        format_t = format.toUtf8();
+                        format_u = format_t;
+                        temp = QString::asprintf(format_u, str);
+                        break;
+                    default:
+                        /*  动态改变序列长度  */
+                        format= "检测到序列：%-" + QString::number(_code_max_) + "s 译为：%c";
+                        format_t = format.toUtf8();
+                        format_u = format_t;
+                        temp = QString::asprintf(format_u, str, _code_[fix].value);
+                        break;
+                    }
                     ui->textSouDe->append(temp);
                     source_decode.append(QString::asprintf("%c", _code_[fix].value));
                     /*  标志位设置(用来跳出j循环，i跳过匹配串长度)  */

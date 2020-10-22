@@ -200,6 +200,19 @@
            <string>信道编码</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_9">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>实际电平状态(h为高电平  n为零电平  l为低电平)：</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_7" columnstretch="0,0,1,10">
              <property name="leftMargin">
@@ -423,6 +436,9 @@
              </item>
             </layout>
            </item>
+           <item row="4" column="0">
+            <widget class="QPlainTextEdit" name="textRecCh"/>
+           </item>
            <item row="2" column="0">
             <widget class="QChartView" name="chartView">
              <property name="minimumSize">
@@ -430,22 +446,6 @@
                <width>0</width>
                <height>390</height>
               </size>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QTextBrowser" name="textRecCh"/>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="font">
-              <font>
-               <family>Agency FB</family>
-               <pointsize>10</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>实际电平状态(h为高电平  n为零电平  l为低电平)：</string>
              </property>
             </widget>
            </item>

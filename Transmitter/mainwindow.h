@@ -11,6 +11,7 @@ using namespace QtCharts;
 
 #define LINE_CODE_MAX 80
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
