@@ -8,19 +8,23 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     /*  设置状态栏   */
-    QLabel *design = new QLabel("一舍5+4出品，更多详情请点击帮助-使用说明。");
+    design = new QLabel("一舍5+4出品，更多详情请点击帮助-使用说明。");
+    statu_file = new QLabel();
 
     QFont font = design->font();
     font.setPointSize(12);
     font.setItalic(true);
     design->setFont(font);
+    statu_file->setFont(font);
 
     QColor color(255, 255, 255);
     QPalette pa;
     pa.setColor(QPalette::WindowText, color);
     design->setPalette(pa);
+    statu_file->setPalette(pa);
 
     ui->statusBar->addWidget(design);
+    ui->statusBar->addWidget(statu_file);
 
     /*  按键   */
     ui->btnJump1->setEnabled(false);
@@ -128,6 +132,7 @@ void MainWindow::on_btnOpenFile_clicked()
         ui->textBrowser1->append("\n\n\n\n文件加载完成 ... ... ");
     }
 
+    statu_file->setText("当前文件：" + filename + " ");
     ui->btnSumm->setEnabled(true);
 }
 
@@ -206,19 +211,19 @@ void MainWindow::on_btnCalSource_clicked()
         for(int i = 0; i < CODENUM; i++){
             if(s_code[i].code.value != -1){
                 if(s_code[i].code.value == 9){
-                    pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 \\t  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else if(s_code[i].code.value == 10){
-                    pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 \\n  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else if(s_code[i].code.value == 13){
-                    pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 \\r  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else{
-                    pri = QString::asprintf("含有 %-2d 个 %-2c  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 %-3c 概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].code.value, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }

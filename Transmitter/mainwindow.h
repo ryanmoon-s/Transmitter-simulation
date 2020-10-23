@@ -84,6 +84,8 @@ private:
     Ui::MainWindow *ui;
 
     QFile file;
+    QLabel *design;
+    QLabel *statu_file;
 
     /*    信源编码   */
     QString fileSource;  //源文件
