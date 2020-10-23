@@ -8,14 +8,12 @@ DlgHelp::DlgHelp(QWidget *parent) :
     ui->setupUi(this);
 
     /*  QSS引入  */
-    QDir qssdir = QApplication::applicationDirPath();
-    QString qsspath = qssdir.path() + "/QtStyleSheet.qss";
-    QFile qssFile(qsspath);
-    qssFile.open(QFile::ReadOnly);
-    QTextStream stream(&qssFile);
+    QFile qss(":/new/prefix1/src/QtStyleSheet.qss");
+    qss.open(QFile::ReadOnly);
+    QTextStream stream(&qss);
     QString stylesheet = stream.readAll();
     this->setStyleSheet(stylesheet);
-    qssFile.close();
+    qss.close();
 }
 
 DlgHelp::~DlgHelp()

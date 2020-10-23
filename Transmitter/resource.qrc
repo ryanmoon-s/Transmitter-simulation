@@ -2,5 +2,6 @@
     <qresource prefix="/new/prefix1">
         <file>src/工具.png</file>
         <file>src/bk.jpg</file>
+        <file>src/QtStyleSheet.qss</file>
     </qresource>
 </RCC>
