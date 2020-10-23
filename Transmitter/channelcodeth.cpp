@@ -438,6 +438,7 @@ void ChannelCodeTh::code_machine(bool now, bool flush)
          */
         UpX = -1;
         QVector<QPointF> point;
+        point.clear();
         series->replace(point);
     }
 }

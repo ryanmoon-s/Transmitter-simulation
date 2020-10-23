@@ -378,6 +378,9 @@ void MainWindow::on_btnStartSouce_clicked()
             for (i = 0; i < CODENUM; i++) {
                 if(s_code[i].code.value == int(*str)){
                     break;
+                }else if(i == CODENUM -1){
+                    QMessageBox::warning(this, "警告", "出现无法识别字符，请检查！\ntips：本软件仅支持英文字符！");
+                    return;
                 }
             }
             source_code.append(s_code[i].code.codes);
@@ -449,22 +452,25 @@ void MainWindow::on_btnStartSouce_clicked()
                 _code_max_ = _code_[_code_num_].codes.count();
             }
             /*  _code_num_为装的码个数  */
-            //qDebug() << i << _code_[_code_num_].value << _code_[_code_num_].codes;
             _code_num_++;
         }
         break;
     }
 
     /*  打印数据  */
-    int zero_count = 0;
+    int one_count = 0;
     for(int i = 0; i < source_code.count(); i++){
-        if(source_code.at(i) == "0"){
-            zero_count++;
+        if(source_code.at(i) == "1"){
+            one_count++;
         }
     }
     ui->textBrowser1->append("编码结果：");
     ui->textBrowser1->append(source_code);
-    ui->textBrowser1->append(QString::asprintf("\n\n\n编码长度：%d\n0数量：%d\n1数量：%d", source_code.count(), zero_count, source_code.count() - zero_count));
+    ui->textBrowser1->append(QString::asprintf("\n\n\n编码长度：%d\n1数量：%d\n", source_code.count(), one_count));
+    /*  偶校验  */
+    if(one_count%2 != 0){
+        source_code.append("1");
+    }
     ui->textBrowser1->append("\n编码完成 ... ... ");
 }
 
@@ -829,26 +835,26 @@ void MainWindow::on_btnChDecode_clicked()
     }
 
     /*  打印数据  */
-    int zero_count = 0;
+    int one_count = 0;
     for(int i = 0; i < channel_decode.count(); i++){
-        if(source_code.at(i) == "0"){
-            zero_count++;
+        if(source_code.at(i) == "1"){
+            one_count++;
         }
     }
     ui->textChDe->append("\n\n解码结果：");
     ui->textChDe->append(channel_decode);
-    ui->textChDe->append(QString::asprintf("\n\n\n编码长度：%d\n0数量：%d\n1数量：%d",
-                               channel_decode.count(), zero_count, channel_decode.count() - zero_count));
+    ui->textChDe->append(QString::asprintf("\n\n\n编码长度：%d\n1数量：%d", channel_decode.count(), one_count));
+    if(one_count%2 == 0){
+        /* 偶校验通过  */
+        ui->textChDe->append("==偶校验通过==");
+    }else{
+        ui->textChDe->append("==偶校验未通过，出现错误==");
+    }
     ui->textChDe->append("\n解码完成 ... ... ");
 
     /*  按键  */
     ui->btnSouDecode->setEnabled(true);
     ui->btnChDecode->setEnabled(false);
-
-//    if(channel_decode == source_code)
-//        qDebug() << "equal" << endl;
-//    else
-//        qDebug() << "not equal" << endl;
 }
 
 void MainWindow::on_btnSouDecode_clicked()
@@ -870,6 +876,7 @@ void MainWindow::on_btnSouDecode_clicked()
     bool find = false; //是否在_code_中匹配到
     int i, j;
     int source;  //拷贝源下标
+    int over_index;
     QString string;  //匹配子串
     QString temp;
     QByteArray bstr;
@@ -881,9 +888,17 @@ void MainWindow::on_btnSouDecode_clicked()
 
     for(i = 0; i < c_count; i++){
         for(j = i; j < i + _code_max_; j++){   //j为从i到_code_max_的偏移
+
+            over_index = j;
+
+            /*  防越界  */
+            if(i == c_count - 1){
+                over_index = i;
+            }
+
             /*  制作比较串  */
             string.clear();
-            for(source = i; source <= j; source++){
+            for(source = i; source <= over_index; source++){
                 /*  从i到j(包括j)这一段拷贝到目标  */
                 string.append(channel_decode.at(source));
             }
@@ -941,9 +956,9 @@ void MainWindow::on_btnSouDecode_clicked()
             }
 
             /*  一次最大长度匹配失败，且防止j越界  */
-            if(j == c_count || j == i + _code_max_ - 1){
-                break;
-            }
+//            if(j == c_count || j == i + _code_max_ - 1){
+//                break;
+//            }
 
         }/*  j循环  */
     }/*  i循环  */

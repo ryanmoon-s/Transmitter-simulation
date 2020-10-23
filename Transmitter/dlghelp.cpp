@@ -40,7 +40,7 @@ void DlgHelp::paintEvent(QPaintEvent *event)
     painter.drawPixmap(rect, map);
 
     /*  蒙板  */
-    QColor color(245, 245, 245, 40);
+    QColor color(100, 100, 100, 150);
     brush.setColor(color);
     painter.setBrush(brush);
 
