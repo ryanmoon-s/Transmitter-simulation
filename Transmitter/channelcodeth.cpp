@@ -150,6 +150,7 @@ void ChannelCodeTh::code_machine(bool now, bool flush)
      * 单极性非归零码
      * 双极性非归零码
      * 单极性归零码
+     * 双极性归零码
      * AMI
      * HDB3
      * CMI
@@ -256,7 +257,18 @@ void ChannelCodeTh::code_machine(bool now, bool flush)
         break;
 
     case 3:
-        //即时编码 AMI(双极性归零码)
+        //即时编码 双极性归零码
+        if(now){
+            //高电平
+            top_jump(range);
+        }else{
+            //低电平
+            buttom_jump(range);
+        }
+
+        break;
+    case 4:
+        //即时编码 AMI
         if(now){
             //高电平
             if(AMI_ch_flag){  //上翻
@@ -272,7 +284,7 @@ void ChannelCodeTh::code_machine(bool now, bool flush)
         }
         break;
 
-    case 4:
+    case 5:
         /*
          * 半即时编码 HDB3
          * last_v_pos.level只有v_jump里面设置了，其它地方需要手动设置
@@ -363,7 +375,7 @@ void ChannelCodeTh::code_machine(bool now, bool flush)
         count++;
         break;
 
-    case 5:
+    case 6:
         //即时编码 CMI
         if(CMI_first){
             CMI_first = false;

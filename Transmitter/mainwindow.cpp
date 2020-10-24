@@ -698,34 +698,34 @@ void MainWindow::on_btnChDecode_clicked()
         for (*str; *str != '\0'; str++) {
             if(*str == 'h'){
                 channel_decode.append('1');
-                ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                ui->textChDe->append("h 转换为 1");
             }else{
                 channel_decode.append('0');
                 swit == 0?
-                ui->textChDe->append(QString::asprintf("n 转换为 0")):
-                ui->textChDe->append(QString::asprintf("l 转换为 0"));
+                ui->textChDe->append("n 转换为 0"):
+                ui->textChDe->append("l 转换为 0");
             }
         }
         break;
 
     case 2:
-    case 3:
+    case 4:
         /*
          * 单极性归零码
-         * 双极性归零码(AMI) 共用
+         * AMI共用
          */
         for (*str; *str != '\0'; str++) {
             if(*str == 'h' || *str == 'l'){
                 /*  h和l都应该被解释成1  */
                 channel_decode.append('1');
-                ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                ui->textChDe->append("h 转换为 1");
             }else{
                 /*  连续两个低电平为，解释为0  */
                 if(last_level == *str){
                     channel_decode.append('0');
                     swit == 2?
-                    ui->textChDe->append(QString::asprintf("n 转换为 0")):
-                    ui->textChDe->append(QString::asprintf("l 转换为 0"));
+                    ui->textChDe->append("n 转换为 0"):
+                    ui->textChDe->append("l 转换为 0");
                     /*  这样判断会存在差分0，导致0数量增多，所以当解释成0后，将上一个电平置成'i'(与电平不同就行)  */
                     last_level = 'i';
                     continue;
@@ -736,7 +736,22 @@ void MainWindow::on_btnChDecode_clicked()
         }
         break;
 
-    case 4:
+    case 3:
+        /*
+         * 双极性归零码
+         */
+        for (*str; *str != '\0'; str++) {
+            if(*str == 'h'){
+                channel_decode.append('1');
+                ui->textChDe->append("h 转换为 1");
+            }else if (*str == 'l'){
+                channel_decode.append('0');
+                ui->textChDe->append("l 转换为 0");
+            }
+        }
+        break;
+
+    case 5:
         /*
          * HDB3
          * 连续两个相同脉冲，第二个必是四连零中的V脉冲，解释为0
@@ -751,7 +766,7 @@ void MainWindow::on_btnChDecode_clicked()
                 if(last_level == 'n'){
                     /*  连续两个零电平解释成0  */
                     channel_decode.append("0");
-                    ui->textChDe->append(QString::asprintf("n 转换为 0"));
+                    ui->textChDe->append("n 转换为 0");
                     /*  这样判断会存在差分0，导致0数量增多，所以当解释成0后，将上一个电平置成'i'(与电平不同就行)  */
                     last_level = 'i';
                     /*  contine前必做的更新操作  */
@@ -764,11 +779,11 @@ void MainWindow::on_btnChDecode_clicked()
                     if(*str == 'h'){
                         /*  上跳为1  */
                         channel_decode.append("1");
-                        ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                        ui->textChDe->append("h 转换为 1");
                     }else if(*str == 'l'){
                         /*  下跳为四连零的v，解释为0  */
                         channel_decode.append("0");
-                        ui->textChDe->append(QString::asprintf("l 转换为 0"));
+                        ui->textChDe->append("l 转换为 0");
                         is_first_v_hdb3 = false;   //不再是第一个v
                     }
                     is_first_h_hdb3 = false;
@@ -792,7 +807,7 @@ void MainWindow::on_btnChDecode_clicked()
                     }else{
                         /*  两个相反脉冲，解释成1  */
                         channel_decode.append("1");
-                        ui->textChDe->append(QString::asprintf("h 转换为 1"));
+                        ui->textChDe->append("h 转换为 1");
                     }
                 }
                 /*  更新上一个脉冲状态  */
@@ -804,7 +819,7 @@ void MainWindow::on_btnChDecode_clicked()
         }
         break;
 
-    case 5:
+    case 6:
         /*
          * CMI
          * 前平后高解释成0
@@ -816,11 +831,11 @@ void MainWindow::on_btnChDecode_clicked()
                 if(last_level  == 'n'){
                     /*  前平后高，解释成0  */
                     channel_decode.append('0');
-                    ui->textChDe->append(QString::asprintf("n h 转换为 0"));
+                    ui->textChDe->append("n h 转换为 0");
                 }else if(last_level == 'h'){
                     /*  前高后高，相同电平，解释成1  */
                     channel_decode.append('1');
-                    ui->textChDe->append(QString::asprintf("h h 转换为 1"));
+                    ui->textChDe->append("h h 转换为 1");
                     /*  这样判断会存在差分1，导致1数量增多，所以当解释成1后，将上一个电平置成'i'(与电平不同就行)  */
                     last_level = 'i';
                     continue;
@@ -829,7 +844,7 @@ void MainWindow::on_btnChDecode_clicked()
                 if(last_level  == 'n'){
                     /*  前低后低，相同电平，解释成1  */
                     channel_decode.append('1');
-                    ui->textChDe->append(QString::asprintf("n n 转换为 1"));
+                    ui->textChDe->append("n n 转换为 1");
                     /*  这样判断会存在差分1，导致1数量增多，所以当解释成1后，将上一个电平置成'i'(与电平不同就行)  */
                     last_level = 'i';
                     continue;

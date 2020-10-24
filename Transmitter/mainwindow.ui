@@ -22,7 +22,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QGridLayout" name="gridLayout_5">
@@ -344,6 +344,11 @@
                <item>
                 <property name="text">
                  <string>单极性归零码</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>双极性归零码</string>
                 </property>
                </item>
                <item>
