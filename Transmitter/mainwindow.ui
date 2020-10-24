@@ -228,7 +228,7 @@
               </font>
              </property>
              <property name="text">
-              <string>实际电平状态(h为高电平  n为零电平  l为低电平)：</string>
+              <string>实际电平序列(h为高电平  n为零电平  l为低电平)：</string>
              </property>
             </widget>
            </item>

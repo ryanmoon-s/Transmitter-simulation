@@ -211,19 +211,19 @@ void MainWindow::on_btnCalSource_clicked()
         for(int i = 0; i < CODENUM; i++){
             if(s_code[i].code.value != -1){
                 if(s_code[i].code.value == 9){
-                    pri = QString::asprintf("含有 %-3d 个 \\t  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 \\t 概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else if(s_code[i].code.value == 10){
-                    pri = QString::asprintf("含有 %-3d 个 \\n  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 \\n 概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else if(s_code[i].code.value == 13){
-                    pri = QString::asprintf("含有 %-3d 个 \\r  概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 \\r 概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }else{
-                    pri = QString::asprintf("含有 %-3d 个 %-3c 概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
+                    pri = QString::asprintf("含有 %-3d 个 %-2c 概率：%-4f  累计概率：%-4f  -log2P(ai)：%-5f  Ki：%-2d  编码："
                                             , s_code[i].count, s_code[i].code.value, s_code[i].probability, s_code[i].s_probability,
                                             s_code[i].log_value, s_code[i].Ki) + s_code[i].code.codes + "\n";
                 }
@@ -238,17 +238,17 @@ void MainWindow::on_btnCalSource_clicked()
         for(int i = 0; i < CODENUM; i++){
             if(f_code[i].code.value != -1){
                 if(f_code[i].code.value == 9){
-                    pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  编码："
+                    pri = QString::asprintf("含有 %-2d 个 \\t 概率：%-4f  编码："
                                             ,f_code[i].count, f_code[i].probability) + f_code[i].code.codes + "\n";
                 }else if(f_code[i].code.value == 10){
-                    pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  编码："
+                    pri = QString::asprintf("含有 %-2d 个 \\n 概率：%-4f  编码："
                                             ,f_code[i].count, f_code[i].probability) + f_code[i].code.codes + "\n";
                 }else if(f_code[i].code.value == 13){
-                    pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  编码："
+                    pri = QString::asprintf("含有 %-2d 个 \\r 概率：%-4f  编码："
                                             ,f_code[i].count, f_code[i].probability) + f_code[i].code.codes + "\n";
                 }else{
 
-                    pri = QString::asprintf("含有 %-2d 个 %-2c  概率：%-4f  编码："
+                    pri = QString::asprintf("含有 %-2d 个 %-2c 概率：%-4f  编码："
                                             ,f_code[i].count, f_code[i].code.value,  f_code[i].probability) + f_code[i].code.codes + "\n";
                 }
                 ui->textBrowser1->append(pri);
@@ -267,16 +267,16 @@ void MainWindow::on_btnCalSource_clicked()
         /*  打印编码  */
         for(int i = 0; i < code_arr_count; i++){
             if(h_code[i]->code.value == 9){
-                pri = QString::asprintf("含有 %-2d 个 \\t  概率：%-4f  编码："
+                pri = QString::asprintf("含有 %-2d 个 \\t 概率：%-4f  编码："
                                         ,h_code[i]->count, h_code[i]->probability) + h_code[i]->code.codes + "\n";
             }else if(h_code[i]->code.value == 10){
-                pri = QString::asprintf("含有 %-2d 个 \\n  概率：%-4f  编码："
+                pri = QString::asprintf("含有 %-2d 个 \\n 概率：%-4f  编码："
                                         ,h_code[i]->count, h_code[i]->probability) + h_code[i]->code.codes + "\n";
             }else if(h_code[i]->code.value == 13){
-                pri = QString::asprintf("含有 %-2d 个 \\r  概率：%-4f  编码："
+                pri = QString::asprintf("含有 %-2d 个 \\r 概率：%-4f  编码："
                                         ,h_code[i]->count, h_code[i]->probability) + h_code[i]->code.codes + "\n";
             }else{
-                pri = QString::asprintf("含有 %-2d 个 %c  概率：%-4f  编码："
+                pri = QString::asprintf("含有 %-2d 个 %-2c 概率：%-4f  编码："
                                         ,h_code[i]->count, h_code[i]->code.value,  h_code[i]->probability) + h_code[i]->code.codes + "\n";
             }
             ui->textBrowser1->append(pri);
@@ -467,14 +467,17 @@ void MainWindow::on_btnStartSouce_clicked()
             one_count++;
         }
     }
+    /*  偶校验  */
+    one_count%2 == 0?source_code.append("0"):source_code.append("1");
     ui->textBrowser1->append("编码结果：");
     ui->textBrowser1->append(source_code);
-    ui->textBrowser1->append(QString::asprintf("\n\n\n编码长度：%d\n1数量：%d\n", source_code.count(), one_count));
-    /*  偶校验  */
+    ui->textBrowser1->append(QString::asprintf("\n\n\n编码长度：%d\n1数量：%d", source_code.count(), one_count));
     if(one_count%2 != 0){
-        source_code.append("1");
+        ui->textBrowser1->append("1数量为奇数，末尾加一位1作为校验位。");
+    }else{
+        ui->textBrowser1->append("1数量为偶数，末尾加一位0作为校验位。");
     }
-    ui->textBrowser1->append("\n编码完成 ... ... ");
+    ui->textBrowser1->append("\n\n编码完成 ... ... ");
 }
 
 void MainWindow::on_btnJump1_clicked()  //进入信道编码
@@ -668,9 +671,10 @@ void MainWindow::on_actioninformation_triggered()
 void MainWindow::on_btnChDecode_clicked()
 {
     /*
-     * 开始信道解码
+     * 信道解码
      */
 
+    ui->textChDe->append("说明：显示从实际电平序列转换的结果，h代表高电平、n代表零电平、l代表低电平\n");
     channel_decode.clear();
     QByteArray bstr = channel_code.toLocal8Bit();
     const char *str = bstr;

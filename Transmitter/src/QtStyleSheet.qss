@@ -111,6 +111,15 @@ QTextBrowser{
     border: 1px solid white
 }
 
+QTextBrowser#textDlg{
+    background:transparent;
+    background-color:rgba(255,255,255,80);
+    border-width:0;
+    color:rgba(40,40,80,255);
+    font: 20px "ºÚÌå";
+    border: 1px solid white
+}
+
 /*  QGraphicsView  */
 QGraphicsView{
     background:transparent;
