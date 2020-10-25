@@ -195,7 +195,7 @@ void Utils::feno_rev(f_dat *f_code, int start, int end)
 h_dat *Utils::source_hauffman_code(int *count_arr)
 {
     /*
-     * 传入头，最终的树结在头下面
+     * 返回root节点
      *
      * 哈夫曼编码
      */

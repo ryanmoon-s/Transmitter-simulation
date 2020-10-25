@@ -977,11 +977,6 @@ void MainWindow::on_btnSouDecode_clicked()
                 break;  //跳出j循环，i跳过匹配串长度
             }
 
-            /*  一次最大长度匹配失败，且防止j越界  */
-//            if(j == c_count || j == i + _code_max_ - 1){
-//                break;
-//            }
-
         }/*  j循环  */
     }/*  i循环  */
 
