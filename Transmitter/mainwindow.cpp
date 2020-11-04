@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     /*  设置状态栏   */
-    design = new QLabel("一舍5+4出品，更多详情请点击帮助-使用说明。");
+    design = new QLabel("更多详情请点击帮助-使用说明 ");
     statu_file = new QLabel();
 
     QFont font = design->font();
