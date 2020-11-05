@@ -18,6 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     channelcodeth.cpp \
+    codeami.cpp \
+    codebase.cpp \
+    codecmi.cpp \
+    codednrz.cpp \
+    codedrz.cpp \
+    codehdb3.cpp \
+    codesnrz.cpp \
+    codesrz.cpp \
     dlghelp.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -25,6 +33,14 @@ SOURCES += \
 
 HEADERS += \
     channelcodeth.h \
+    codeami.h \
+    codebase.h \
+    codecmi.h \
+    codednrz.h \
+    codedrz.h \
+    codehdb3.h \
+    codesnrz.h \
+    codesrz.h \
     dlghelp.h \
     mainwindow.h \
     utils.h

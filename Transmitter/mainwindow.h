@@ -26,6 +26,7 @@ public:
     /*  自编函数  */
     void huff_code(h_dat *root, int deepth, h_dat **h_code, int *index);  //哈夫曼遍历编码
 
+
     /*    信道编码相关    */
     void CMI_zero_jump(QLineSeries *series);  //CMI的零有三步，单独写个函数
 

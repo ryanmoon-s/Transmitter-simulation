@@ -577,8 +577,6 @@ void MainWindow::push_rec_ch(char c)
 {
     /*
      * 打印信道解码过程识别到的电平
-     * 直接append会在末尾换行，所以就只有一列
-     * 此处取出文本内容，加上字符，写回去
      */
 
 //此方法太占用cpu资源，导致界面卡顿
@@ -642,6 +640,7 @@ void MainWindow::on_btnChStart_clicked()
 
     /*  按键(必须在new之前，不然如果快速按两下按键，第一个线程就游离了)  */
     ui->btnChStart->setEnabled(false);
+    ui->btnJump2->setEnabled(false);
     ui->textRecCh->clear();
     ui->line_code->clear();
     QVector<QPointF> point;
@@ -650,11 +649,10 @@ void MainWindow::on_btnChStart_clicked()
     /*  启动线程  */
     th = new ChannelCodeTh();
     connect(th, SIGNAL(update_line_code(int)), this, SLOT(update_line_code(int)));
-    connect(th, SIGNAL(push_rec_ch(char)), this, SLOT(push_rec_ch(char)));
     connect(this, SIGNAL(adjest_speed(int)), th, SLOT(adjest_speed(int)));
     connect(th, SIGNAL(ch_code_finished()), this, SLOT(ch_code_finished()));
 
-    th->set_attribute(series, chart, axisX, axisY, source_code, ui->comboChannel->currentIndex());
+    th->set_attribute(series, source_code, ui->comboChannel->currentIndex());
     th->start();
 }
 
@@ -682,8 +680,8 @@ void MainWindow::on_btnChDecode_clicked()
     /*  解码  */
     char last_level = 'i';   //上一个电平状态，归零码判断低电平专用(连续两个低电平解释为1)
 
-    char last_h_hdb3 = 'n';    //上一个脉冲是向上还是向下，HDB3判断V电平专用(连续两个相同属性的脉冲，第二个将被解释为0)
     int count = 0;   //记录当前下标是第几个,hdb3用到了
+    char last_h_hdb3 = 'n';    //上一个脉冲是向上还是向下，HDB3判断V电平专用(连续两个相同属性的脉冲，第二个将被解释为0)
     bool is_first_v_hdb3 = true;   //是否为第一个v，hdb3用
     bool is_first_h_hdb3 = true;    //出现的第一个脉冲，若此脉冲上跳-为1，若它为下跳-为四连零的v
 
