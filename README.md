@@ -1,3 +1,3 @@
 # myGit
-Baseband transmission simulation software based on QT
-welcome to view and communicate with me
+Baseband transmission simulation software based on QT.
+Welcome to view and communicate with me
