@@ -27,7 +27,7 @@ void Utils::statistical(QString text, int *count_arr)  //统计字符
     }
 
     /*    save value    */
-    for(*str; *str != '\0'; str++){
+    for( ; *str != '\0'; str++){
         count_arr[int(*str)]++;
     }
 }
@@ -354,7 +354,7 @@ int Utils::arr_length(char *str)
      */
 
     int count = 0;
-    for (*str; *str != '\0'; str++) {
+    for (; *str != '\0'; str++) {
         count++;
         if(*(str + 1) == '\0')
             break;
