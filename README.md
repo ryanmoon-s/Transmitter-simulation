@@ -1,3 +1,12 @@
 # myGit
-Baseband transmission simulation software based on QT.
-Welcome to view and communicate with me
+
+基带信号模拟器
+
+• 基于QT开发，用图形界面形式展现信号传输的：信源编码、信源解码、信道编码、信道解码过程。
+• 信源编解码涉及：链表、哈夫曼树等数据结，采用多线程并发编程。
+• 用到了策略模式解决信道编码线程与不同的信道编码方式之间的紧密依赖关系，便于扩展。
+
+
+
+
+- 西华大学 -
